@@ -505,19 +505,6 @@ target platform and specify -Dntdll_target=msbuild on the mvn command line.
   </reporting>
   <profiles>
     <profile>
-      <id>mac</id>
-      <activation>
-        <os>
-          <family>mac</family>
-        </os>
-      </activation>
-      <properties>
-        <tools.jar>${java.home}/../Classes/classes.jar</tools.jar>
-        <m2_repo>${user.home}/.m2/repository</m2_repo>
-        <ntdll_target>build</ntdll_target>
-      </properties>
-    </profile>
-    <profile>
       <id>default</id>
       <activation>
         <activeByDefault>true</activeByDefault>
