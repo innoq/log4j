@@ -39,6 +39,7 @@ import org.apache.log4j.config.PropertySetter;
 import org.apache.log4j.helpers.FileWatchdog;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.helpers.OptionConverter;
+import org.apache.log4j.helpers.ShutdownEventListener;
 import org.apache.log4j.or.RendererMap;
 import org.apache.log4j.spi.Configurator;
 import org.apache.log4j.spi.Filter;
@@ -473,6 +474,7 @@ new PropertyConfigurator().doConfigure(inputStream,
     PropertyWatchdog pdog = new PropertyWatchdog(configFilename);
     pdog.setDelay(delay);
     pdog.start();
+    LogManager.getLoggerRepository().addShutdownEventListener(pdog);
   }
 
 
@@ -941,7 +943,7 @@ new PropertyConfigurator().doConfigure(inputStream,
   }
 }
 
-class PropertyWatchdog extends FileWatchdog {
+class PropertyWatchdog extends FileWatchdog implements ShutdownEventListener {
 
   PropertyWatchdog(String filename) {
     super(filename);
@@ -954,6 +956,10 @@ class PropertyWatchdog extends FileWatchdog {
   void doOnChange() {
     new PropertyConfigurator().doConfigure(filename,
 					   LogManager.getLoggerRepository());
+  }
+  
+  public void shutdown() {
+    this.interrupt();
   }
 }
 

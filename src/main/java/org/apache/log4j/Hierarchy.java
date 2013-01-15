@@ -39,6 +39,7 @@ import org.apache.log4j.spi.RendererSupport;
 import org.apache.log4j.or.RendererMap;
 import org.apache.log4j.or.ObjectRenderer;
 import org.apache.log4j.helpers.LogLog;
+import org.apache.log4j.helpers.ShutdownEventListener;
 import org.apache.log4j.spi.ThrowableRendererSupport;
 import org.apache.log4j.spi.ThrowableRenderer;
 
@@ -67,6 +68,7 @@ public class Hierarchy implements LoggerRepository, RendererSupport, ThrowableRe
 
   private LoggerFactory defaultFactory;
   private Vector listeners;
+  private Vector shutdownListeners;
 
   Hashtable ht;
   Logger root;
@@ -90,6 +92,7 @@ public class Hierarchy implements LoggerRepository, RendererSupport, ThrowableRe
   Hierarchy(Logger root) {
     ht = new Hashtable();
     listeners = new Vector(1);
+    shutdownListeners = new Vector(1);
     this.root = root;
     // Enable all level levels by default.
     setThreshold(Level.ALL);
@@ -112,6 +115,15 @@ public class Hierarchy implements LoggerRepository, RendererSupport, ThrowableRe
       LogLog.warn("Ignoring attempt to add an existent listener.");
     } else {
       listeners.addElement(listener);
+    }
+  }
+
+  public
+  void addShutdownEventListener(ShutdownEventListener listener) {
+    if(shutdownListeners.contains(listener)) {
+      LogLog.warn("Ignoring attempt to add an existent listener.");
+    } else {
+      shutdownListeners.addElement(listener);
     }
   }
 
@@ -474,6 +486,12 @@ public class Hierarchy implements LoggerRepository, RendererSupport, ThrowableRe
 	Logger c = (Logger) cats.nextElement();
 	c.removeAllAppenders();
       }
+    }
+    
+    Enumeration listeners = shutdownListeners.elements();
+    while (listeners.hasMoreElements()) {
+      ShutdownEventListener listener = (ShutdownEventListener)listeners.nextElement();
+      listener.shutdown();
     }
   }
 

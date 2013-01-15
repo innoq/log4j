@@ -103,7 +103,8 @@ public abstract class FileWatchdog extends Thread {
       try {
 	    Thread.sleep(delay);
       } catch(InterruptedException e) {
-	// no interruption expected
+	    interrupted = true;
+	    break;
       }
       checkAndConfigure();
     }

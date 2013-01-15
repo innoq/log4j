@@ -23,6 +23,7 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.helpers.ShutdownEventListener;
 
 /**
    A <code>LoggerRepository</code> is used to create and retrieve
@@ -107,4 +108,11 @@ public interface LoggerRepository {
   abstract
   void resetConfiguration();
 
+  /**
+     Add a {@link HierarchyEventListener} event to the repository.
+  */
+  public
+  void addShutdownEventListener(ShutdownEventListener listener);
+
+  
 }

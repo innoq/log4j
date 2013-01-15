@@ -27,6 +27,7 @@ import org.apache.log4j.helpers.FileWatchdog;
 import org.apache.log4j.helpers.Loader;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.helpers.OptionConverter;
+import org.apache.log4j.helpers.ShutdownEventListener;
 import org.apache.log4j.or.RendererMap;
 import org.apache.log4j.spi.AppenderAttachable;
 import org.apache.log4j.spi.Configurator;
@@ -735,6 +736,7 @@ public class DOMConfigurator implements Configurator {
     XMLWatchdog xdog = new XMLWatchdog(configFilename);
     xdog.setDelay(delay);
     xdog.start();
+    LogManager.getLoggerRepository().addShutdownEventListener(xdog);
   }
   
   private interface ParseAction {
@@ -1111,7 +1113,7 @@ public class DOMConfigurator implements Configurator {
 }
 
 
-class XMLWatchdog extends FileWatchdog {
+class XMLWatchdog extends FileWatchdog implements ShutdownEventListener {
 
     XMLWatchdog(String filename) {
     super(filename);
@@ -1124,5 +1126,9 @@ class XMLWatchdog extends FileWatchdog {
   void doOnChange() {
     new DOMConfigurator().doConfigure(filename, 
 				      LogManager.getLoggerRepository());
+  }
+  
+  public void shutdown() {
+ this.interrupt();
   }
 }
